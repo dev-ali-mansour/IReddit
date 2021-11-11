@@ -1,4 +1,4 @@
-package dev.alimansour.myapplication
+package dev.alimansour.data
 
 import org.junit.Test
 
