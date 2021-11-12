@@ -1,6 +1,9 @@
 package dev.alimansour.ireddit.ui.home
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import dev.alimansour.domain.model.Post
 import dev.alimansour.domain.usecase.AddPostToFavoriteUseCase
 import dev.alimansour.domain.usecase.DisposeObserversUseCase
@@ -20,10 +23,9 @@ class HomeViewModel(
     val posts: LiveData<Resource<List<Post>>>
         get() = _posts
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
-    }
-    val text: LiveData<String> = _text
+    private val _action = MediatorLiveData<Resource<String>>()
+    val action: LiveData<Resource<String>>
+        get() = _action
 
     fun getPosts(limit: Int, after: String) {
         _posts.addSource(getPostsUseCase.execute(limit, after)) { value ->
@@ -38,7 +40,9 @@ class HomeViewModel(
     }
 
     fun addPostToFavorite(post: Post) {
-        addPostToFavoriteUseCase.execute(post)
+        _action.addSource(addPostToFavoriteUseCase.execute(post)) { value ->
+            _action.postValue(value)
+        }
     }
 
     override fun onCleared() {

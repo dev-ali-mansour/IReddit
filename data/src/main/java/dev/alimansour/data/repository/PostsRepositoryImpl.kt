@@ -26,7 +26,7 @@ class PostsRepositoryImpl(
     override fun getPosts(limit: Int, after: String): LiveData<Resource<List<Post>>> {
         val resource = MutableLiveData<Resource<List<Post>>>()
         resource.value = Resource.Loading()
-        compositeDisposable.add(remoteDataSource.getPosts(limit = limit, after = after)
+        compositeDisposable.add(remoteDataSource.getPosts(limit, after)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeWith(object : DisposableObserver<Response<PostsResponse>>() {
@@ -57,11 +57,8 @@ class PostsRepositoryImpl(
     ): LiveData<Resource<List<Post>>> {
         val resource = MutableLiveData<Resource<List<Post>>>()
         resource.value = Resource.Loading()
-        compositeDisposable.add(remoteDataSource.searchForPost(
-            query = query,
-            limit = limit,
-            after = after
-        ).subscribeOn(Schedulers.io())
+        compositeDisposable.add(remoteDataSource.searchForPost(query, limit, after)
+            .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeWith(object : DisposableObserver<Response<PostsResponse>>() {
                 override fun onComplete() {}
@@ -84,15 +81,15 @@ class PostsRepositoryImpl(
         return resource
     }
 
-    override fun addToFavorites(post: Post): LiveData<Resource<Boolean>> {
-        val resource = MutableLiveData<Resource<Boolean>>()
+    override fun addToFavorites(post: Post): LiveData<Resource<String>> {
+        val resource = MutableLiveData<Resource<String>>()
         resource.value = Resource.Loading()
         compositeDisposable.add(localDataSource.addToFavorites(post.toEntity())
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeWith(object : DisposableCompletableObserver() {
                 override fun onComplete() {
-                    resource.postValue(Resource.Success(true))
+                    resource.postValue(Resource.Success("The post has been added to favorites successfully!"))
                 }
 
                 override fun onError(e: Throwable) {
@@ -102,19 +99,18 @@ class PostsRepositoryImpl(
             }
             )
         )
-
         return resource
     }
 
-    override fun removeFromFavorites(post: Post): LiveData<Resource<Boolean>> {
-        val resource = MutableLiveData<Resource<Boolean>>()
+    override fun removeFromFavorites(post: Post): LiveData<Resource<String>> {
+        val resource = MutableLiveData<Resource<String>>()
         resource.value = Resource.Loading()
         compositeDisposable.add(localDataSource.removeFromFavorites(post.toEntity())
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeWith(object : DisposableCompletableObserver() {
                 override fun onComplete() {
-                    resource.postValue(Resource.Success(true))
+                    resource.postValue(Resource.Success("The post has been removed from favorites successfully!"))
                 }
 
                 override fun onError(e: Throwable) {
@@ -151,15 +147,15 @@ class PostsRepositoryImpl(
         return resource
     }
 
-    override fun clearFavorites(): LiveData<Resource<Boolean>> {
-        val resource = MutableLiveData<Resource<Boolean>>()
+    override fun clearFavorites(): LiveData<Resource<String>> {
+        val resource = MutableLiveData<Resource<String>>()
         resource.value = Resource.Loading()
         compositeDisposable.add(localDataSource.clearFavorites()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeWith(object : DisposableCompletableObserver() {
                 override fun onComplete() {
-                    resource.postValue(Resource.Success(true))
+                    resource.postValue(Resource.Success("Favorites has been cleared successfully!"))
                 }
 
                 override fun onError(e: Throwable) {

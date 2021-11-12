@@ -6,7 +6,7 @@ import dev.alimansour.domain.repository.PostsRepository
 import dev.alimansour.domain.util.Resource
 import javax.inject.Inject
 
-class AddPostToFavoriteUseCase @Inject constructor(private val repository: PostsRepository) {
+class GetFavoritesUseCase @Inject constructor(private val repository: PostsRepository) {
 
-    fun execute(post: Post): LiveData<Resource<String>> = repository.addToFavorites(post)
+    fun execute(): LiveData<Resource<List<Post>>> = repository.getFavorites()
 }

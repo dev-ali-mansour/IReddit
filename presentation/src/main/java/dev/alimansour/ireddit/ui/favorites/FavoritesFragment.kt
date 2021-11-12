@@ -1,39 +1,43 @@
 package dev.alimansour.ireddit.ui.favorites
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import dev.alimansour.ireddit.MyApplication
 import dev.alimansour.ireddit.databinding.FragmentFavoritesBinding
+import javax.inject.Inject
 
 class FavoritesFragment : Fragment() {
 
-    private lateinit var favoritesViewModel: FavoritesViewModel
+    @Inject
+    lateinit var favoritesViewModel: FavoritesViewModel
     private var _binding: FragmentFavoritesBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        runCatching {
+            (requireActivity().application as MyApplication).appComponent
+                .viewModelComponentBuilder()
+                .context(requireContext())
+                .activity(requireActivity())
+                .build()
+                .inject(this)
+
+        }.onFailure { it.printStackTrace() }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        favoritesViewModel =
-            ViewModelProvider(this)[FavoritesViewModel::class.java]
-
         _binding = FragmentFavoritesBinding.inflate(inflater, container, false)
-        val root: View = binding.root
 
-        val textView: TextView = binding.textDashboard
-        favoritesViewModel.text.observe(viewLifecycleOwner, {
-            textView.text = it
-        })
-        return root
+        return binding.root
     }
 
     override fun onDestroyView() {
