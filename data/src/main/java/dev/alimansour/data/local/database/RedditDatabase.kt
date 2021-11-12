@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import dev.alimansour.data.local.dao.PostsDao
 import dev.alimansour.data.local.entity.PostEntity
 
-@Database(entities = [PostEntity::class], version = 1)
+@Database(entities = [PostEntity::class], version = 1, exportSchema = false)
 abstract class RedditDatabase : RoomDatabase() {
     abstract fun postDao(): PostsDao
 }
