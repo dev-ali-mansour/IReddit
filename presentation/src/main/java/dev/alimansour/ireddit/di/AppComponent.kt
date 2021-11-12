@@ -4,6 +4,8 @@ import android.content.Context
 import dagger.BindsInstance
 import dagger.Component
 import dev.alimansour.ireddit.MainActivity
+import dev.alimansour.ireddit.ui.favorites.FavoritesFragment
+import dev.alimansour.ireddit.ui.home.HomeFragment
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
@@ -20,6 +22,8 @@ interface AppComponent {
     }
 
     fun inject(mainActivity: MainActivity)
+    fun inject(homeFragment: HomeFragment)
+    fun inject(favoritesFragment: FavoritesFragment)
 
 }
 

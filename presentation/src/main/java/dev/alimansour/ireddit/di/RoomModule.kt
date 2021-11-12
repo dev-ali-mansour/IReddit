@@ -26,5 +26,4 @@ object RoomModule {
     fun providePostsDao(db: RedditDatabase): PostsDao {
         return db.postDao()
     }
-
 }

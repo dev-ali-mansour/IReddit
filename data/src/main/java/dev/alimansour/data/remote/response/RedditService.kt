@@ -15,7 +15,7 @@ interface RedditService {
     ): Observable<Response<PostsResponse>>
 
     @GET("search.json")
-    suspend fun searchForPost(
+    fun searchForPost(
         @Path("q") query: String,
         @Path("limit:") limit: Int,
         @Path("after:") after: String,
