@@ -1,13 +1,13 @@
 package dev.alimansour.data.remote
 
-import dev.alimansour.data.remote.response.PostsResponse
-import io.reactivex.Observable
-import retrofit2.Response
+import androidx.lifecycle.LiveData
+import dev.alimansour.domain.model.Post
 
 interface RemoteDataSource {
 
-    fun getPosts(limit: Int, after: String): Observable<Response<PostsResponse>>
+    fun getPosts(limit: Int, after: String): LiveData<List<Post>>
 
-    fun searchForPost(query: String, limit: Int, after: String)
-            : Observable<Response<PostsResponse>>
+    fun searchForPost(query: String, limit: Int, after: String): LiveData<List<Post>>
+
+    fun clearObservers()
 }

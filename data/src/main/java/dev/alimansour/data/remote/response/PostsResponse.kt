@@ -1,18 +1,36 @@
 package dev.alimansour.data.remote.response
 
 import com.google.gson.annotations.SerializedName
+import dev.alimansour.domain.model.Post
 
 data class PostsResponse(
     @field:SerializedName("data")
     val data: Data,
-)
+) {
+    fun toModel(): List<Post> {
+        return data.children.map { post ->
+            val image =
+                when {
+                    post.postData.preview == null -> null
+                    post.postData.preview.images.isNullOrEmpty() -> null
+                    else -> post.postData.preview.images[0].source.url
+                }
+            Post(
+                post.postData.title,
+                post.postData.authorFullName,
+                image,
+                post.postData.isVideo
+            )
+        }
+    }
+}
 
 data class Data(
     @field:SerializedName("children")
-    val posts: List<Post>,
+    val children: List<Child>,
 )
 
-data class Post(
+data class Child(
     @field:SerializedName("data")
     val postData: PostData
 )
@@ -25,7 +43,7 @@ data class PostData(
     val isVideo: Boolean,
 
     @field:SerializedName("preview")
-    val preview: Preview,
+    val preview: Preview?,
 
     @field:SerializedName("title")
     val title: String,

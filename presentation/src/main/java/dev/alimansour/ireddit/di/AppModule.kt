@@ -10,6 +10,7 @@ import dev.alimansour.data.remote.RemoteDataSourceImpl
 import dev.alimansour.data.remote.response.RedditService
 import dev.alimansour.data.repository.PostsRepositoryImpl
 import dev.alimansour.domain.repository.PostsRepository
+import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Singleton
 
 @Module
@@ -17,8 +18,14 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideRemoteDataSource(redditService: RedditService): RemoteDataSource =
-        RemoteDataSourceImpl(redditService)
+    fun providesCompositeDisposable() = CompositeDisposable()
+
+    @Singleton
+    @Provides
+    fun provideRemoteDataSource(
+        redditService: RedditService,
+        compositeDisposable: CompositeDisposable
+    ): RemoteDataSource = RemoteDataSourceImpl(redditService, compositeDisposable)
 
     @Singleton
     @Provides

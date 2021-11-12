@@ -1,5 +1,6 @@
 package dev.alimansour.data.repository
 
+import androidx.lifecycle.LiveData
 import dev.alimansour.data.local.LocalDataSource
 import dev.alimansour.data.remote.RemoteDataSource
 import dev.alimansour.domain.model.Post
@@ -8,7 +9,7 @@ class PostsRepositoryImpl(
     private val remoteDataSource: RemoteDataSource,
     private val localDataSource: LocalDataSource
 ) : dev.alimansour.domain.repository.PostsRepository {
-    override fun getPosts(): List<Post> {
+    override fun getPosts(): LiveData<List<Post>> {
         TODO("Not yet implemented")
     }
 
@@ -24,7 +25,7 @@ class PostsRepositoryImpl(
         TODO("Not yet implemented")
     }
 
-    override fun search(query: String) {
+    override fun search(query: String): LiveData<List<Post>> {
         TODO("Not yet implemented")
     }
 }

@@ -3,21 +3,21 @@ package dev.alimansour.data.remote.response
 import io.reactivex.Observable
 import retrofit2.Response
 import retrofit2.http.GET
-import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface RedditService {
 
     @GET("top.json")
     fun getPosts(
-        @Path("t") t: String = "all",
-        @Path("limit:") limit: Int,
-        @Path("after:") after: String,
+        @Query("t") t: String = "all",
+        @Query("limit") limit: Int,
+        @Query("after") after: String,
     ): Observable<Response<PostsResponse>>
 
     @GET("search.json")
     fun searchForPost(
-        @Path("q") query: String,
-        @Path("limit:") limit: Int,
-        @Path("after:") after: String,
+        @Query("q") query: String,
+        @Query("limit") limit: Int,
+        @Query("after") after: String,
     ): Observable<Response<PostsResponse>>
 }
