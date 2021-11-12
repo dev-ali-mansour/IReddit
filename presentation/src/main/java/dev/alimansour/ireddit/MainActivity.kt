@@ -17,6 +17,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         (application as MyApplication).appComponent
+            .viewModelComponentBuilder()
+            .context(this)
+            .activity(this)
+            .build()
             .inject(this)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
