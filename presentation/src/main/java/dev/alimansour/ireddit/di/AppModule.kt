@@ -23,9 +23,8 @@ object AppModule {
     @Singleton
     @Provides
     fun provideRemoteDataSource(
-        redditService: RedditService,
-        compositeDisposable: CompositeDisposable
-    ): RemoteDataSource = RemoteDataSourceImpl(redditService, compositeDisposable)
+        redditService: RedditService
+    ): RemoteDataSource = RemoteDataSourceImpl(redditService)
 
     @Singleton
     @Provides
@@ -36,6 +35,7 @@ object AppModule {
     @Provides
     fun providePostsRepository(
         remoteDataSource: RemoteDataSource,
-        localDataSource: LocalDataSource
-    ): PostsRepository = PostsRepositoryImpl(remoteDataSource, localDataSource)
+        localDataSource: LocalDataSource,
+        compositeDisposable: CompositeDisposable
+    ): PostsRepository = PostsRepositoryImpl(remoteDataSource, localDataSource, compositeDisposable)
 }
