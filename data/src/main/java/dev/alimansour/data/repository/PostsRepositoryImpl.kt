@@ -3,12 +3,16 @@ package dev.alimansour.data.repository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import dev.alimansour.data.local.LocalDataSource
+import dev.alimansour.data.local.entity.PostEntity
 import dev.alimansour.data.remote.RemoteDataSource
 import dev.alimansour.data.remote.response.PostsResponse
+import dev.alimansour.data.util.toEntity
+import dev.alimansour.data.util.toModel
 import dev.alimansour.domain.model.Post
 import dev.alimansour.domain.util.Resource
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.observers.DisposableCompletableObserver
 import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
 import retrofit2.Response
@@ -46,7 +50,11 @@ class PostsRepositoryImpl(
         return resource
     }
 
-    override fun searchForPost(query: String, limit: Int, after: String): LiveData<Resource<List<Post>>> {
+    override fun searchForPost(
+        query: String,
+        limit: Int,
+        after: String
+    ): LiveData<Resource<List<Post>>> {
         val resource = MutableLiveData<Resource<List<Post>>>()
         resource.value = Resource.Loading()
         compositeDisposable.add(remoteDataSource.searchForPost(
@@ -76,15 +84,96 @@ class PostsRepositoryImpl(
         return resource
     }
 
-    override fun addToFavorites(post: Post) {
-        TODO("Not yet implemented")
+    override fun addToFavorites(post: Post): LiveData<Resource<Boolean>> {
+        val resource = MutableLiveData<Resource<Boolean>>()
+        resource.value = Resource.Loading()
+        compositeDisposable.add(localDataSource.addToFavorites(post.toEntity())
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeWith(object : DisposableCompletableObserver() {
+                override fun onComplete() {
+                    resource.postValue(Resource.Success(true))
+                }
+
+                override fun onError(e: Throwable) {
+                    Timber.e("Failed to add post to favorites: ${e.message}")
+                    resource.postValue(Resource.Error(e.message.toString()))
+                }
+            }
+            )
+        )
+
+        return resource
     }
 
-    override fun removeFromFavorites(post: Post) {
-        TODO("Not yet implemented")
+    override fun removeFromFavorites(post: Post): LiveData<Resource<Boolean>> {
+        val resource = MutableLiveData<Resource<Boolean>>()
+        resource.value = Resource.Loading()
+        compositeDisposable.add(localDataSource.removeFromFavorites(post.toEntity())
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeWith(object : DisposableCompletableObserver() {
+                override fun onComplete() {
+                    resource.postValue(Resource.Success(true))
+                }
+
+                override fun onError(e: Throwable) {
+                    Timber.e("Failed to remove post from favorites: ${e.message}")
+                    resource.postValue(Resource.Error(e.message.toString()))
+                }
+            }
+            )
+        )
+
+        return resource
     }
 
-    override fun clearFavorites() {
-        TODO("Not yet implemented")
+    override fun getFavorites(): LiveData<Resource<List<Post>>> {
+        val resource = MutableLiveData<Resource<List<Post>>>()
+        resource.value = Resource.Loading()
+        compositeDisposable.add(localDataSource.getFavorites()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeWith(object : DisposableObserver<List<PostEntity>>() {
+                override fun onComplete() {}
+
+                override fun onNext(t: List<PostEntity>) {
+                    resource.postValue(Resource.Success(t.map { it.toModel() }))
+                }
+
+                override fun onError(e: Throwable) {
+                    Timber.e("Failed to get Posts: ${e.message}")
+                    resource.postValue(Resource.Error(e.message.toString()))
+                }
+            }
+            )
+        )
+        return resource
+    }
+
+    override fun clearFavorites(): LiveData<Resource<Boolean>> {
+        val resource = MutableLiveData<Resource<Boolean>>()
+        resource.value = Resource.Loading()
+        compositeDisposable.add(localDataSource.clearFavorites()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeWith(object : DisposableCompletableObserver() {
+                override fun onComplete() {
+                    resource.postValue(Resource.Success(true))
+                }
+
+                override fun onError(e: Throwable) {
+                    Timber.e("Failed to clear favorites: ${e.message}")
+                    resource.postValue(Resource.Error(e.message.toString()))
+                }
+            }
+            )
+        )
+
+        return resource
+    }
+
+    override fun disposeObservers() {
+        compositeDisposable.dispose()
     }
 }

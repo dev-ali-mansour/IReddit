@@ -9,6 +9,6 @@ data class PostEntity(
     var id: Int,
     val title: String,
     val author: String,
-    val image: String,
+    val image: String?,
     val isVideo: Boolean
 )

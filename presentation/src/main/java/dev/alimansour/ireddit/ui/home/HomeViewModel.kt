@@ -2,6 +2,8 @@ package dev.alimansour.ireddit.ui.home
 
 import androidx.lifecycle.*
 import dev.alimansour.domain.model.Post
+import dev.alimansour.domain.usecase.AddPostToFavoriteUseCase
+import dev.alimansour.domain.usecase.DisposeObserversUseCase
 import dev.alimansour.domain.usecase.GetPostsUseCase
 import dev.alimansour.domain.usecase.SearchForPostUseCase
 import dev.alimansour.domain.util.Resource
@@ -10,7 +12,9 @@ import javax.inject.Singleton
 
 class HomeViewModel(
     private val getPostsUseCase: GetPostsUseCase,
-    private val searchForPostUseCase: SearchForPostUseCase
+    private val searchForPostUseCase: SearchForPostUseCase,
+    private val addPostToFavoriteUseCase: AddPostToFavoriteUseCase,
+    private val disposeObserversUseCase: DisposeObserversUseCase
 ) : ViewModel() {
     private val _posts = MediatorLiveData<Resource<List<Post>>>()
     val posts: LiveData<Resource<List<Post>>>
@@ -32,12 +36,23 @@ class HomeViewModel(
             _posts.postValue(value)
         }
     }
+
+    fun addPostToFavorite(post: Post) {
+        addPostToFavoriteUseCase.execute(post)
+    }
+
+    override fun onCleared() {
+        disposeObserversUseCase.execute()
+        super.onCleared()
+    }
 }
 
 @Singleton
 class HomeViewModelFactory @Inject constructor(
     private val getPostsUseCase: GetPostsUseCase,
-    private val searchForPostUseCase: SearchForPostUseCase
+    private val searchForPostUseCase: SearchForPostUseCase,
+    private val addPostToFavoriteUseCase: AddPostToFavoriteUseCase,
+    private val disposeObserversUseCase: DisposeObserversUseCase
 ) :
     ViewModelProvider.Factory {
     @Suppress("unchecked_cast")
@@ -45,7 +60,9 @@ class HomeViewModelFactory @Inject constructor(
         if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
             return HomeViewModel(
                 getPostsUseCase,
-                searchForPostUseCase
+                searchForPostUseCase,
+                addPostToFavoriteUseCase,
+                disposeObserversUseCase
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
