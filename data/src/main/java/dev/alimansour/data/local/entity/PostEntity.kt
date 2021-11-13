@@ -8,7 +8,8 @@ data class PostEntity(
     @PrimaryKey(autoGenerate = true)
     var id: Int,
     val title: String,
-    val author: String,
+    val author: String?,
     val image: String?,
-    val isVideo: Boolean
+    val isVideo: Boolean,
+    val url: String?
 )

@@ -14,6 +14,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableCompletableObserver
 import io.reactivex.observers.DisposableObserver
+import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
 import retrofit2.Response
 import timber.log.Timber
@@ -29,10 +30,8 @@ class PostsRepositoryImpl(
         compositeDisposable.add(remoteDataSource.getPosts(limit, after)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribeWith(object : DisposableObserver<Response<PostsResponse>>() {
-                override fun onComplete() {}
-
-                override fun onNext(t: Response<PostsResponse>) {
+            .subscribeWith(object : DisposableSingleObserver<Response<PostsResponse>>() {
+                override fun onSuccess(t: Response<PostsResponse>) {
                     if (t.isSuccessful) {
                         t.body()?.let { response ->
                             resource.postValue(Resource.Success(response.toModel()))
@@ -60,10 +59,8 @@ class PostsRepositoryImpl(
         compositeDisposable.add(remoteDataSource.searchForPost(query, limit, after)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribeWith(object : DisposableObserver<Response<PostsResponse>>() {
-                override fun onComplete() {}
-
-                override fun onNext(t: Response<PostsResponse>) {
+            .subscribeWith(object : DisposableSingleObserver<Response<PostsResponse>>() {
+                override fun onSuccess(t: Response<PostsResponse>) {
                     if (t.isSuccessful) {
                         t.body()?.let { response ->
                             resource.postValue(Resource.Success(response.toModel()))

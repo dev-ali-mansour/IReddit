@@ -1,6 +1,6 @@
 package dev.alimansour.data.remote.response
 
-import io.reactivex.Observable
+import io.reactivex.Single
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -12,12 +12,12 @@ interface RedditService {
         @Query("t") t: String = "all",
         @Query("limit") limit: Int,
         @Query("after") after: String,
-    ): Observable<Response<PostsResponse>>
+    ): Single<Response<PostsResponse>>
 
     @GET("search.json")
     fun searchForPost(
         @Query("q") query: String,
         @Query("limit") limit: Int,
         @Query("after") after: String,
-    ): Observable<Response<PostsResponse>>
+    ): Single<Response<PostsResponse>>
 }

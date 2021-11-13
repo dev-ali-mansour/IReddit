@@ -4,9 +4,9 @@ import dev.alimansour.data.local.entity.PostEntity
 import dev.alimansour.data.remote.response.PostsResponse
 import dev.alimansour.domain.model.Post
 
-fun Post.toEntity(): PostEntity = PostEntity(id, title, author, image, isVideo)
+fun Post.toEntity(): PostEntity = PostEntity(id, title, author, image, isVideo, url)
 
-fun PostEntity.toModel(): Post = Post(id, title, author, image, isVideo)
+fun PostEntity.toModel(): Post = Post(id, title, author, image, isVideo, url, "foo")
 
 fun PostsResponse.toModel(): List<Post> = data.children.map { post ->
     val image =
@@ -18,8 +18,10 @@ fun PostsResponse.toModel(): List<Post> = data.children.map { post ->
     Post(
         0,
         post.postData.title,
-        post.postData.authorFullName,
-        image,
-        post.postData.isVideo
+        post.postData.author,
+        image?.replace("&amp;", "&"),
+        post.postData.isVideo,
+        "https://www.reddit.com/${post.postData.url}",
+        this.data.after
     )
 }

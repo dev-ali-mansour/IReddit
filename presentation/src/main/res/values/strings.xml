@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">IReddit</string>
-    <string name="title_home">Home</string>
+    <string name="title_home">Top Posts</string>
     <string name="title_favorites">Favorites</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="post_image">Post image</string>
+    <string name="search_in_posts">Search in posts</string>
+    <string name="add_to_favorites_button">Add to favorites button</string>
+    <string name="title_post">Post details</string>
 </resources>

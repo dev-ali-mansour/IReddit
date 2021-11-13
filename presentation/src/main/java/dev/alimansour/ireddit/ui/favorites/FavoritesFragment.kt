@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import dev.alimansour.ireddit.MainActivity
 import dev.alimansour.ireddit.MyApplication
 import dev.alimansour.ireddit.databinding.FragmentFavoritesBinding
 import javax.inject.Inject
@@ -36,6 +37,8 @@ class FavoritesFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentFavoritesBinding.inflate(inflater, container, false)
+
+        (requireActivity() as MainActivity).isNavViewVisible = true
 
         return binding.root
     }
