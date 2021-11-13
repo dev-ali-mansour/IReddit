@@ -1,8 +1,15 @@
 package dev.alimansour.ireddit.util
 
 import android.app.Activity
+import android.content.Context
+import android.net.Uri
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.browser.customtabs.CustomTabColorSchemeParams
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.core.content.ContextCompat
+import dev.alimansour.domain.model.Post
+import dev.alimansour.ireddit.R
 
 fun Activity.hideSoftKeyboard() {
     val imm: InputMethodManager =
@@ -14,4 +21,14 @@ fun Activity.hideSoftKeyboard() {
         view = View(this)
     }
     imm.hideSoftInputFromWindow(view.windowToken, 0)
+}
+
+fun Context.navigateToPost(post: Post) {
+    val builder = CustomTabsIntent.Builder()
+    val defaultColors = CustomTabColorSchemeParams.Builder()
+        .setToolbarColor(ContextCompat.getColor(this, R.color.purple_500))
+        .build()
+    builder.setDefaultColorSchemeParams(defaultColors)
+    val customTabsIntent = builder.build()
+    customTabsIntent.launchUrl(this, Uri.parse(post.url))
 }

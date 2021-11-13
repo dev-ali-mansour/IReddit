@@ -28,6 +28,7 @@ import dev.alimansour.domain.usecase.RemovePostFromFavoriteUseCase_Factory;
 import dev.alimansour.domain.usecase.SearchForPostUseCase;
 import dev.alimansour.domain.usecase.SearchForPostUseCase_Factory;
 import dev.alimansour.ireddit.ui.MainActivity;
+import dev.alimansour.ireddit.ui.favorites.FavoritesAdapter;
 import dev.alimansour.ireddit.ui.favorites.FavoritesFragment;
 import dev.alimansour.ireddit.ui.favorites.FavoritesFragment_MembersInjector;
 import dev.alimansour.ireddit.ui.favorites.FavoritesViewModel;
@@ -227,6 +228,7 @@ public final class DaggerAppComponent implements AppComponent {
 
     private FavoritesFragment injectFavoritesFragment(FavoritesFragment instance) {
       FavoritesFragment_MembersInjector.injectFavoritesViewModel(instance, provideFavoritesViewModelProvider.get());
+      FavoritesFragment_MembersInjector.injectFavoritesAdapter(instance, new FavoritesAdapter());
       return instance;
     }
   }

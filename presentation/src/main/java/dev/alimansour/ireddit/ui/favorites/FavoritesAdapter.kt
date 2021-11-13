@@ -60,7 +60,18 @@ class FavoritesAdapter @Inject constructor() :
                     .placeholder(R.drawable.image_placeholder)
                     .into(binding.postImageView)
             }
+
+            binding.root.setOnClickListener {
+                onItemClickListener?.let { it(post) }
+            }
         }
+
+
+    }
+
+    private var onItemClickListener: ((Post) -> Unit)? = null
+    fun setOnItemClickListener(listener: (Post) -> Unit) {
+        onItemClickListener = listener
     }
 }
 

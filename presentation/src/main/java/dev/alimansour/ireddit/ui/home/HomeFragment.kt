@@ -1,29 +1,25 @@
 package dev.alimansour.ireddit.ui.home
 
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
 import androidx.appcompat.widget.SearchView
-import androidx.browser.customtabs.CustomTabColorSchemeParams
-import androidx.browser.customtabs.CustomTabsIntent
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import dev.alimansour.domain.model.Post
 import dev.alimansour.domain.util.Resource
 import dev.alimansour.ireddit.MyApplication
 import dev.alimansour.ireddit.R
 import dev.alimansour.ireddit.databinding.FragmentHomeBinding
 import dev.alimansour.ireddit.ui.MainActivity
 import dev.alimansour.ireddit.util.hideSoftKeyboard
+import dev.alimansour.ireddit.util.navigateToPost
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -95,7 +91,7 @@ class HomeFragment : Fragment() {
         (requireActivity() as MainActivity).isNavViewVisible = true
 
         postsAdapter.setOnItemClickListener { post ->
-            navigateToPost(post)
+            requireContext().navigateToPost(post)
         }
         postsAdapter.setOnItemFavoriteClickListener { post ->
             homeViewModel.addPostToFavorite(post)
@@ -132,16 +128,6 @@ class HomeFragment : Fragment() {
                 }
             }
         }
-    }
-
-    private fun navigateToPost(post: Post) {
-        val builder = CustomTabsIntent.Builder()
-        val defaultColors = CustomTabColorSchemeParams.Builder()
-            .setToolbarColor(ContextCompat.getColor(requireContext(), R.color.purple_500))
-            .build()
-        builder.setDefaultColorSchemeParams(defaultColors)
-        val customTabsIntent = builder.build()
-        customTabsIntent.launchUrl(requireContext(), Uri.parse(post.url))
     }
 
     private fun viewPosts() {
