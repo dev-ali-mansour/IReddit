@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.fragment.app.FragmentActivity
 import dagger.BindsInstance
 import dagger.Subcomponent
-import dev.alimansour.ireddit.MainActivity
+import dev.alimansour.ireddit.ui.MainActivity
 import dev.alimansour.ireddit.ui.favorites.FavoritesFragment
 import dev.alimansour.ireddit.ui.home.HomeFragment
 import javax.inject.Scope

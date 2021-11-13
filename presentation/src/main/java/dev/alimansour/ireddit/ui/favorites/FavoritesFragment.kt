@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import dev.alimansour.ireddit.MainActivity
+import dev.alimansour.ireddit.ui.MainActivity
 import dev.alimansour.ireddit.MyApplication
 import dev.alimansour.ireddit.databinding.FragmentFavoritesBinding
 import javax.inject.Inject

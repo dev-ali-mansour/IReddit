@@ -19,10 +19,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import dev.alimansour.domain.model.Post
 import dev.alimansour.domain.util.Resource
-import dev.alimansour.ireddit.MainActivity
 import dev.alimansour.ireddit.MyApplication
 import dev.alimansour.ireddit.R
 import dev.alimansour.ireddit.databinding.FragmentHomeBinding
+import dev.alimansour.ireddit.ui.MainActivity
 import dev.alimansour.ireddit.util.hideSoftKeyboard
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
