@@ -98,18 +98,40 @@ class HomeFragment : Fragment() {
             navigateToPost(post)
         }
         postsAdapter.setOnItemFavoriteClickListener { post ->
-            // Todo Implement adding post to favorites
-            Snackbar.make(binding.root, "${post.title} added to favorites", Snackbar.LENGTH_LONG)
-                .show()
+            homeViewModel.addPostToFavorite(post)
         }
 
         initRecyclerView()
         viewPosts()
         setSearchView()
+        observeActions()
 
         homeViewModel.getPosts(limit, "foo")
 
         return binding.root
+    }
+
+    private fun observeActions() {
+        binding.apply {
+            homeViewModel.action.observe(viewLifecycleOwner) { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        progressBar.isVisible = true
+                    }
+                    is Resource.Success -> {
+                        progressBar.isVisible = false
+                        resource.data?.let { message ->
+                            Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+                        }
+                    }
+                    is Resource.Error -> {
+                        val message = "Failed to add the post to favorites: ${resource.message}"
+                        Timber.d(message)
+                        Snackbar.make(root, message, Snackbar.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
     }
 
     private fun navigateToPost(post: Post) {
@@ -141,12 +163,9 @@ class HomeFragment : Fragment() {
                         }
                     }
                     is Resource.Error -> {
-                        Timber.d("Failed to Load Posts: ${resource.message}")
-                        Snackbar.make(
-                            root,
-                            "Failed to Load Posts: ${resource.message}",
-                            Snackbar.LENGTH_LONG
-                        ).show()
+                        val message = "Failed to Load Posts: ${resource.message}"
+                        Timber.d(message)
+                        Snackbar.make(root, message, Snackbar.LENGTH_LONG).show()
                     }
                 }
             }
