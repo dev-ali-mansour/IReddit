@@ -19,17 +19,17 @@ class FavoritesViewModel(
     private val clearFavoriteUseCase: ClearFavoriteUseCase,
     private val disposeObserversUseCase: DisposeObserversUseCase
 ) : ViewModel() {
-    private val _posts = MediatorLiveData<Resource<List<Post>>>()
-    val posts: LiveData<Resource<List<Post>>>
-        get() = _posts
+    private val _favorites = MediatorLiveData<Resource<List<Post>>>()
+    val favorites: LiveData<Resource<List<Post>>>
+        get() = _favorites
 
     private val _action = MediatorLiveData<Resource<String>>()
     val action: LiveData<Resource<String>>
         get() = _action
 
     fun getFavorites() {
-        _posts.addSource(getFavoriteUseCase.execute()) { value ->
-            _posts.postValue(value)
+        _favorites.addSource(getFavoriteUseCase.execute()) { value ->
+            _favorites.postValue(value)
         }
     }
 
