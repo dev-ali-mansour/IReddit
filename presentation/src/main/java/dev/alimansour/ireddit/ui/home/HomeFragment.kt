@@ -7,11 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
+import androidx.appcompat.widget.SearchView
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -21,6 +23,9 @@ import dev.alimansour.ireddit.MainActivity
 import dev.alimansour.ireddit.MyApplication
 import dev.alimansour.ireddit.R
 import dev.alimansour.ireddit.databinding.FragmentHomeBinding
+import dev.alimansour.ireddit.util.hideSoftKeyboard
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -38,6 +43,8 @@ class HomeFragment : Fragment() {
     private var after: String? = null
     private var isScrolling = false
     private var isLoading = false
+    private var query = ""
+    private var isSearching = false
 
     private val onScrollListener = object : RecyclerView.OnScrollListener() {
         override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
@@ -58,11 +65,10 @@ class HomeFragment : Fragment() {
                 val hasReachedToEnd = topPosition + visibleItems >= sizeOfTheCurrentList
                 val shouldPaginate = !isLoading && hasReachedToEnd && isScrolling
                 if (shouldPaginate) {
-                    homeViewModel.getPosts(limit, it)
+                    if (isSearching) homeViewModel.searchForPost(query, limit, it)
+                    else homeViewModel.getPosts(limit, it)
                     isScrolling = false
                 }
-            } ?: run {
-                Snackbar.make(binding.root, "No more posts!", Snackbar.LENGTH_LONG).show()
             }
         }
     }
@@ -89,7 +95,7 @@ class HomeFragment : Fragment() {
         (requireActivity() as MainActivity).isNavViewVisible = true
 
         postsAdapter.setOnItemClickListener { post ->
-            navigeteToPost(post)
+            navigateToPost(post)
         }
         postsAdapter.setOnItemFavoriteClickListener { post ->
             // Todo Implement adding post to favorites
@@ -98,14 +104,15 @@ class HomeFragment : Fragment() {
         }
 
         initRecyclerView()
-        viewPostsList()
+        viewPosts()
+        setSearchView()
 
         homeViewModel.getPosts(limit, "foo")
 
         return binding.root
     }
 
-    private fun navigeteToPost(post: Post) {
+    private fun navigateToPost(post: Post) {
         val builder = CustomTabsIntent.Builder()
         val defaultColors = CustomTabColorSchemeParams.Builder()
             .setToolbarColor(ContextCompat.getColor(requireContext(), R.color.purple_500))
@@ -115,25 +122,21 @@ class HomeFragment : Fragment() {
         customTabsIntent.launchUrl(requireContext(), Uri.parse(post.url))
     }
 
-    private fun viewPostsList() {
+    private fun viewPosts() {
         binding.apply {
             homeViewModel.posts.observe(viewLifecycleOwner) { resource ->
                 when (resource) {
                     is Resource.Loading -> {
-                        Timber.d("Loading Posts after $after!")
                         progressBar.isVisible = true
                     }
                     is Resource.Success -> {
                         progressBar.isVisible = false
-                        resource.data?.let { posts ->
-                            val items = postsAdapter.differ.currentList.toMutableList()
-                            items.addAll(posts)
-                            if (items.isEmpty()) {
-                                Timber.d("No posts found!")
-                                Snackbar.make(root, "No posts found!", Snackbar.LENGTH_LONG).show()
-                            } else {
+                        resource.data?.let { list ->
+                            val posts = postsAdapter.differ.currentList.toMutableList()
+                            posts.addAll(list)
+                            if (posts.isNotEmpty()) {
                                 after = posts[0].after
-                                postsAdapter.differ.submitList(items)
+                                postsAdapter.differ.submitList(posts)
                             }
                         }
                     }
@@ -150,11 +153,48 @@ class HomeFragment : Fragment() {
         }
     }
 
+
     private fun initRecyclerView() {
         binding.postsRecyclerView.apply {
             adapter = postsAdapter
             layoutManager = LinearLayoutManager(activity)
             addOnScrollListener(this@HomeFragment.onScrollListener)
+        }
+    }
+
+    private fun setSearchView() {
+        binding.searchView.setOnQueryTextListener(
+            object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(p0: String?): Boolean {
+                    return false
+                }
+
+                override fun onQueryTextChange(p0: String?): Boolean {
+                    p0?.let {
+                        if (it.isEmpty()) return false
+                        lifecycleScope.launch {
+                            delay(2000)
+                            query = it
+                            after = "foo"
+                            isSearching = true
+                            postsAdapter.differ.submitList(listOf())
+                            homeViewModel.searchForPost(query, limit, after!!)
+                            (requireActivity() as MainActivity).activityTitle =
+                                getString(R.string.title_search_results)
+                            requireActivity().hideSoftKeyboard()
+                        }
+                    }
+                    return false
+                }
+            })
+
+        binding.searchView.setOnCloseListener {
+            after = "foo"
+            isSearching = false
+            postsAdapter.differ.submitList(listOf())
+            homeViewModel.getPosts(limit, after!!)
+            (requireActivity() as MainActivity).activityTitle = getString(R.string.title_home)
+            false
         }
     }
 

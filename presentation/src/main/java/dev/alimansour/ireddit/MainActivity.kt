@@ -20,6 +20,11 @@ class MainActivity : AppCompatActivity() {
         set(value) {
             navView.isVisible = value
         }
+    var activityTitle: String?
+        get() = supportActionBar?.title.toString()
+        set(value) {
+            supportActionBar?.title = value
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
