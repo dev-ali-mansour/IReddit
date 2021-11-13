@@ -10,6 +10,7 @@ import dev.alimansour.domain.usecase.DisposeObserversUseCase
 import dev.alimansour.domain.usecase.GetFavoritesUseCase
 import dev.alimansour.domain.usecase.RemovePostFromFavoriteUseCase
 import dev.alimansour.domain.util.Resource
+import dev.alimansour.ireddit.util.LiveEvent
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -23,7 +24,7 @@ class FavoritesViewModel(
     val favorites: LiveData<Resource<List<Post>>>
         get() = _favorites
 
-    private val _action = MediatorLiveData<Resource<String>>()
+    private val _action = LiveEvent<Resource<String>>()
     val action: LiveData<Resource<String>>
         get() = _action
 

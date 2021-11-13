@@ -141,10 +141,12 @@ class HomeFragment : Fragment() {
                         progressBar.isVisible = false
                         resource.data?.let { list ->
                             val posts = postsAdapter.differ.currentList.toMutableList()
-                            posts.addAll(list)
+                            list.forEach { post ->
+                                if (!posts.contains(post)) posts.add(post)
+                            }
                             if (posts.isNotEmpty()) {
-                                after = posts[0].after
-                                postsAdapter.differ.submitList(posts)
+                                after = posts.first().after
+                                postsAdapter.differ.submitList(posts.toList())
                             }
                         }
                     }

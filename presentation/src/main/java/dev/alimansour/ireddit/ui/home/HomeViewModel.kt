@@ -10,6 +10,7 @@ import dev.alimansour.domain.usecase.DisposeObserversUseCase
 import dev.alimansour.domain.usecase.GetPostsUseCase
 import dev.alimansour.domain.usecase.SearchForPostUseCase
 import dev.alimansour.domain.util.Resource
+import dev.alimansour.ireddit.util.LiveEvent
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -23,7 +24,7 @@ class HomeViewModel(
     val posts: LiveData<Resource<List<Post>>>
         get() = _posts
 
-    private val _action = MediatorLiveData<Resource<String>>()
+    private val _action = LiveEvent<Resource<String>>()
     val action: LiveData<Resource<String>>
         get() = _action
 

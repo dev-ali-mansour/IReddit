@@ -7,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import dev.alimansour.domain.util.Resource
 import dev.alimansour.ireddit.MyApplication
@@ -55,7 +57,9 @@ class FavoritesFragment : Fragment() {
         }
 
         initRecyclerView()
+        initSwipeToDelete()
         viewFavorites()
+        observeActions()
 
         favoritesViewModel.getFavorites()
 
@@ -91,6 +95,55 @@ class FavoritesFragment : Fragment() {
             }
         }
     }
+
+    private fun observeActions() {
+        binding.apply {
+            favoritesViewModel.action.observe(viewLifecycleOwner) { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        progressBar.isVisible = true
+                    }
+                    is Resource.Success -> {
+                        progressBar.isVisible = false
+                        resource.data?.let { message ->
+                            Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+                        }
+                    }
+                    is Resource.Error -> {
+                        val message = "Failed to remove from favorites: ${resource.message}"
+                        Timber.d(message)
+                        Snackbar.make(root, message, Snackbar.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun initSwipeToDelete() {
+        val itemTouchHelperCallBack = object : ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN,
+            ItemTouchHelper.START or ItemTouchHelper.END
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                val post = favoritesAdapter.differ.currentList[position]
+                favoritesViewModel.removeFromFavorites(post)
+            }
+        }
+
+        ItemTouchHelper(itemTouchHelperCallBack).apply {
+            attachToRecyclerView(binding.favoritesRecyclerView)
+        }
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
