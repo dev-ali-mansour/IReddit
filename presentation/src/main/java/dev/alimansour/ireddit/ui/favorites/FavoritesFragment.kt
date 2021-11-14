@@ -56,6 +56,10 @@ class FavoritesFragment : Fragment() {
             requireContext().navigateToPost(post)
         }
 
+        binding.fabClear.setOnClickListener {
+            favoritesViewModel.clearFavorites()
+        }
+
         initRecyclerView()
         initSwipeToDelete()
         viewFavorites()
