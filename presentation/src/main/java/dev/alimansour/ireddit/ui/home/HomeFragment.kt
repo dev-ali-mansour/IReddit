@@ -57,20 +57,22 @@ class HomeFragment : Fragment() {
 
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             super.onScrolled(recyclerView, dx, dy)
-            after?.let {
-                val layoutManager = binding.postsRecyclerView.layoutManager as LinearLayoutManager
-                val sizeOfTheCurrentList = layoutManager.itemCount
-                val visibleItems = layoutManager.childCount
-                val topPosition = layoutManager.findFirstVisibleItemPosition()
 
-                val hasReachedToEnd = topPosition + visibleItems >= sizeOfTheCurrentList
-                val shouldPaginate = !isLoading && hasReachedToEnd && isScrolling
-                if (shouldPaginate) {
+            val layoutManager = binding.postsRecyclerView.layoutManager as LinearLayoutManager
+            val sizeOfTheCurrentList = layoutManager.itemCount
+            val visibleItems = layoutManager.childCount
+            val topPosition = layoutManager.findFirstVisibleItemPosition()
+
+            val hasReachedToEnd = topPosition + visibleItems >= sizeOfTheCurrentList
+            val shouldPaginate = !isLoading && hasReachedToEnd && isScrolling
+            if (shouldPaginate) {
+                after?.let {
                     if (isSearching) homeViewModel.searchForPost(query, limit, it)
                     else homeViewModel.getPosts(limit, it)
-                    isScrolling = false
                 }
+                isScrolling = false
             }
+
         }
     }
 
@@ -153,7 +155,7 @@ class HomeFragment : Fragment() {
                                 if (!posts.contains(post)) posts.add(post)
                             }
                             if (posts.isNotEmpty()) {
-                                after = posts.first().after
+                                after = posts.last().after
                                 postsAdapter.differ.submitList(posts.toList())
                             }
                         }
