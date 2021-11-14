@@ -40,6 +40,8 @@ import dev.alimansour.ireddit.ui.home.HomeViewModel;
 import dev.alimansour.ireddit.ui.home.HomeViewModelFactory;
 import dev.alimansour.ireddit.ui.home.HomeViewModelFactory_Factory;
 import dev.alimansour.ireddit.ui.home.PostsAdapter;
+import dev.alimansour.ireddit.util.ConnectivityManager;
+import dev.alimansour.ireddit.util.ConnectivityManager_Factory;
 import io.reactivex.disposables.CompositeDisposable;
 import javax.inject.Provider;
 import okhttp3.OkHttpClient;
@@ -86,6 +88,8 @@ public final class DaggerAppComponent implements AppComponent {
 
   private Provider<HomeViewModelFactory> homeViewModelFactoryProvider;
 
+  private Provider<ConnectivityManager> connectivityManagerProvider;
+
   private Provider<GetFavoritesUseCase> getFavoritesUseCaseProvider;
 
   private Provider<RemovePostFromFavoriteUseCase> removePostFromFavoriteUseCaseProvider;
@@ -122,6 +126,7 @@ public final class DaggerAppComponent implements AppComponent {
     this.addPostToFavoriteUseCaseProvider = AddPostToFavoriteUseCase_Factory.create(providePostsRepositoryProvider);
     this.disposeObserversUseCaseProvider = DisposeObserversUseCase_Factory.create(providePostsRepositoryProvider);
     this.homeViewModelFactoryProvider = DoubleCheck.provider(HomeViewModelFactory_Factory.create(getPostsUseCaseProvider, searchForPostUseCaseProvider, addPostToFavoriteUseCaseProvider, disposeObserversUseCaseProvider));
+    this.connectivityManagerProvider = DoubleCheck.provider(ConnectivityManager_Factory.create(contextProvider));
     this.getFavoritesUseCaseProvider = GetFavoritesUseCase_Factory.create(providePostsRepositoryProvider);
     this.removePostFromFavoriteUseCaseProvider = RemovePostFromFavoriteUseCase_Factory.create(providePostsRepositoryProvider);
     this.clearFavoriteUseCaseProvider = ClearFavoriteUseCase_Factory.create(providePostsRepositoryProvider);
@@ -223,6 +228,7 @@ public final class DaggerAppComponent implements AppComponent {
     private HomeFragment injectHomeFragment(HomeFragment instance) {
       HomeFragment_MembersInjector.injectHomeViewModel(instance, provideHomeViewModelProvider.get());
       HomeFragment_MembersInjector.injectPostsAdapter(instance, new PostsAdapter());
+      HomeFragment_MembersInjector.injectConnectivityManager(instance, appComponent.connectivityManagerProvider.get());
       return instance;
     }
 

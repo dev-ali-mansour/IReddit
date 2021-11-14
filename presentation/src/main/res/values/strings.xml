@@ -9,4 +9,5 @@
     <string name="title_post">Post details</string>
     <string name="clear_all_favorites_button">Clear all favorites Button</string>
     <string name="no_favorite_posts">No Favorite posts! Let\'s add some</string>
+    <string name="not_connected">Oops! You are not connected</string>
 </resources>

@@ -18,6 +18,7 @@ import dev.alimansour.ireddit.MyApplication
 import dev.alimansour.ireddit.R
 import dev.alimansour.ireddit.databinding.FragmentHomeBinding
 import dev.alimansour.ireddit.ui.MainActivity
+import dev.alimansour.ireddit.util.ConnectivityManager
 import dev.alimansour.ireddit.util.hideSoftKeyboard
 import dev.alimansour.ireddit.util.navigateToPost
 import kotlinx.coroutines.delay
@@ -33,6 +34,9 @@ class HomeFragment : Fragment() {
     @Inject
     lateinit var postsAdapter: PostsAdapter
 
+    @Inject
+    lateinit var connectivityManager: ConnectivityManager
+
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private val limit = 25
@@ -41,6 +45,7 @@ class HomeFragment : Fragment() {
     private var isLoading = false
     private var query = ""
     private var isSearching = false
+    private var isConnected = false
 
     private val onScrollListener = object : RecyclerView.OnScrollListener() {
         override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
@@ -87,8 +92,11 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        isConnected = connectivityManager.isConnected()
 
         (requireActivity() as MainActivity).isNavViewVisible = true
+        binding.postsRecyclerView.isVisible = isConnected
+        binding.textviewNotConnected.isVisible = !isConnected
 
         postsAdapter.setOnItemClickListener { post ->
             requireContext().navigateToPost(post)
@@ -97,13 +105,13 @@ class HomeFragment : Fragment() {
             homeViewModel.addPostToFavorite(post)
         }
 
-        initRecyclerView()
-        viewPosts()
-        setSearchView()
-        observeActions()
-
-        homeViewModel.getPosts(limit, "foo")
-
+        if (isConnected) {
+            initRecyclerView()
+            viewPosts()
+            setSearchView()
+            observeActions()
+            homeViewModel.getPosts(limit, "foo")
+        }
         return binding.root
     }
 
