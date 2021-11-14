@@ -87,6 +87,8 @@ class FavoritesFragment : Fragment() {
                     is Resource.Success -> {
                         progressBar.isVisible = false
                         resource.data?.let { favorites ->
+                            textviewNoData.isVisible = favorites.isEmpty()
+                            favoritesRecyclerView.isVisible = favorites.isNotEmpty()
                             favoritesAdapter.differ.submitList(favorites)
                         }
                     }
