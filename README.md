@@ -8,7 +8,7 @@ Each layer is in a separate module, So the application is modularized.
 </p>
 <br/>
 <p align="center">
-<img src="https://miro.medium.com/max/700/1*RP7405-VH22rQxZef9fWHg.png" width="500" align="center"><br/>
+<img src="https://i.ibb.co/Q902503/1-RP7405-VH22r-Qx-Zef9f-WHg.png" width="500" align="center"><br/>
 </p>
 
 ## User can:
